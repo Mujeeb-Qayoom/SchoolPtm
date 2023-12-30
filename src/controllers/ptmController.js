@@ -1,12 +1,12 @@
-const dbQuries = require('../models/dbQueries');
 const responses = require('../functions/responses');
-const dbQueries = require('../models/dbQueries');
 const datavalidator = require('../validations/dataValidator');
 const ptmData = require('../validations/ptmValidator');
 const appointmentData = require('../validations/appointmentValidator');
 const teacherAttributeData = require('../validations/teacherAttributeValidator');
 const SlotData = require('../validations/timeSlotValidator');
 const mapFunctiions = require('../functions/mapFunctiions');
+const commonQueries = require('../queries/commonQueries');
+const adminQueries = require('../queries/AdminQueries');
 
 
 
@@ -23,7 +23,7 @@ module.exports = {
 
             // check wheather already exist or create one
 
-            const existingPtm = await dbQuries.findPtm(req.body.date);
+            const existingPtm = await commonQueries.findPtm(req.body.date);
 
             const isUnique = await mapFunctiions.checkDuplicateTeacherIdsAndTimeslots(req.body);
 
@@ -54,7 +54,7 @@ module.exports = {
                const validatedPtmDAata = await datavalidator.validateData(data, ptmData, res);
 
 
-               const result = await dbQuries.addPtm(validatedPtmDAata);
+               const result = await adminQueries.addPtm(validatedPtmDAata);
 
                const attributes = req.body.teacherAttributes
 
@@ -69,7 +69,7 @@ module.exports = {
 
                   const validatedAppointmentDAata = await datavalidator.validateData(appData, appointmentData, res);
 
-                  const appt = await dbQuries.addAppointment(validatedAppointmentDAata);
+                  const appt = await commonQueries.addAppointment(validatedAppointmentDAata);
 
                   const AttributeData = {
                      teacher: teacher.teacher_id,
@@ -80,9 +80,9 @@ module.exports = {
 
                   // const validatedAttributeDAata = await datavalidator.validateData(AttributeData, teacherAttributeData, res);
 
-                  const teacherAttribute = await dbQueries.addTeacherAttribute(AttributeData);
+                  const teacherAttribute = await adminQueries.addTeacherAttribute(AttributeData);
                   // update ptm table with teacher attributes 
-                  const updateTeacherAttributes = await dbQueries.updatePtm(teacherAttribute, result._id);
+                  const updateTeacherAttributes = await adminQueries.updatePtm(teacherAttribute, result._id);
 
                   // adding time slots to the timeslot table with curent appointment  
                   const timeslots = teacher.timeslots.map(async (timeslot) => {
@@ -104,11 +104,11 @@ module.exports = {
 
 
                      //  const validatedtimeSlotData = await datavalidator.validateData(slotdata, SlotData, res);
-                     const timeSlot = await dbQueries.addTimeSlot(slotdata);
+                     const timeSlot = await commonQueries.addTimeSlot(slotdata);
 
                      // updating appointmnets with timeslots
 
-                     const updateAppt = await dbQueries.updateAppoitment(timeSlot, appt._id);
+                     const updateAppt = await adminQueries.updateAppoitment(timeSlot, appt._id);
 
                   })
 
@@ -139,10 +139,10 @@ module.exports = {
                      };
                      console.log("lunch appoitment ", slotdata.appointment);
                      // const validatedtimeSlotData = await datavalidator.validateData(slotdata, SlotData, res);
-                     const timeSlot = await dbQueries.addTimeSlot(slotdata);
+                     const timeSlot = await commonQueries.addTimeSlot(slotdata);
 
                      // updating appointments with time slots
-                     const updateAppt = await dbQueries.updateAppoitment(timeSlot, appt._id);
+                     const updateAppt = await adminQueries.updateAppoitment(timeSlot, appt._id);
                   }
                }))
 
@@ -169,7 +169,7 @@ module.exports = {
 
       try {
 
-         const ptm = await dbQueries.getPtm(req.body.ptm, req.body.childern);
+         const ptm = await commonQueries.getPtm(req.body.ptm, req.body.childern);
 
          if (ptm) {
             return responses.successResponse(req, res, 200, ptm);

@@ -3,14 +3,16 @@
 //require('../config/db');
 
 const crypt = require('../functions/bcrypt');
-const dbQuries = require('../models/dbQueries'); // Import your User model
+const commonQueries = require('../queries/commonQueries');
+const adminQueries = require('../queries/AdminQueries');
+// Import your User model
 
 module.exports = {
   seedAdmin: async () => {
     try {
       // Check if an admin user already exists
 
-      const existingAdmin = await dbQuries.findUser('admin');
+      const existingAdmin = await commonQueries.findUser('admin');
 
       if (!existingAdmin) {
         // Create a new admin user
@@ -23,7 +25,7 @@ module.exports = {
           isctive: true,
         };
 
-        const admin = await dbQuries.register(adminData);
+        const admin = await adminQueries.register(adminData);
 
         console.log('Admin user seeded successfully.');
       } else {

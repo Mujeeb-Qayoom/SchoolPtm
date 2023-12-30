@@ -18,6 +18,7 @@ module.exports = {
       }
 
       if (req.body.password !== req.body.confirmPassword) {
+
         return responses.errorResponse(req, res, 400, "password not matched");
       }
 

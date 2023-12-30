@@ -1,4 +1,6 @@
-const dbQueries = require('../models/dbQueries');
+const commonQueries = require('../queries/commonQueries');
+const adminQueries = require('../queries/AdminQueries');
+const parentQueries = require('../queries/parentQueries')
 const responses = require('../functions/responses');
 const mapFunctiions = require('../functions/mapFunctiions')
 
@@ -7,7 +9,7 @@ module.exports = {
     getMyChildren: async (req, res) => {
         try {
 
-            const children = await dbQueries.getMyChildren(req.user._id);
+            const children = await parentQueries.getMyChildren(req.user._id);
 
 
             if (children) {
@@ -25,7 +27,7 @@ module.exports = {
 
         try {
 
-            const teachers = await dbQueries.getAllPtmTeachers(req.body.ptmDate, req.body.childrenId);
+            const teachers = await parentQueries.getAllPtmTeachers(req.body.ptmDate, req.body.childrenId);
 
             if (teachers) {
                 return responses.successResponse(req, res, 200, teachers);
@@ -60,7 +62,7 @@ module.exports = {
             childrenId: req.body.childId
         }
 
-        const appt = await dbQueries.addAppointment(appData);
+        const appt = await commonQueries.addAppointment(appData);
 
 
         // adding time slots to the timeslot table with curent appointment  
@@ -85,11 +87,11 @@ module.exports = {
             // const validatedtimeSlotData = await datavalidator.validateData(slotdata, SlotData, res);
 
             // Add time slot to the database
-            return dbQueries.addTimeSlot(slotdata);
+            return commonQueries.addTimeSlot(slotdata);
         }));
 
         console.log("Slots are ", Slot)
-        const updateAppt = await dbQueries.updateAppoitment(Slot, appt._id);
+        const updateAppt = await commonQueries.updateAppoitment(Slot, appt._id);
 
 
         if (updateAppt) {
@@ -104,7 +106,7 @@ module.exports = {
 
             // const getMyChildren = await dbQueries.getMyChildren(req.user._id);
 
-            const myAppt = await dbQueries.MyAppoitments(req.user._id);
+            const myAppt = await parentQueries.MyAppoitments(req.user._id);
 
 
             if (myAppt) {
@@ -120,4 +122,4 @@ module.exports = {
 
 
 
-}    
+}                       
