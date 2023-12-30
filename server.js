@@ -1,6 +1,5 @@
 require('dotenv').config();
 const adminSeed = require('./src/seeders/seedAdmin');
-const teacherSeed = require('./src/seeders/seedTeacher');
 const locationSeed = require('./src/seeders/seedLocation');
 const subjectSeed = require('./src/seeders/seedSubject');
 
@@ -36,7 +35,6 @@ server.listen(port, () => {
   db.once('open', () => {
     console.log('Connected to MongoDB');
     adminSeed.seedAdmin();
-    // teacherSeed.seedTeachers();
     locationSeed.seedLocations();
     subjectSeed.seedSubjects();
 

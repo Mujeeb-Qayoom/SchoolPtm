@@ -30,6 +30,7 @@ module.exports =
     }));
   },
 
+
   checkDuplicateTeacherIdsAndTimeslots: async (body) => {
 
     if (body.teacherAttributes) {
@@ -101,6 +102,7 @@ module.exports =
         return true;
       }
 
+
       //   teacherIds.add(teacherId);
       //   return false;
       // });
@@ -108,28 +110,5 @@ module.exports =
     }
   },
 
-  timeDifference: async (start_time, end_time) => {
-
-    const startTime = new Date(start_time);
-    const endTime = new Date(end_time);
-
-    if (!(startTime instanceof Date) || !(endTime instanceof Date)) {
-      throw new Error("Both arguments must be Date objects.");
-    }
-
-    // getTime() returns the number of milliseconds since January 1, 1970
-    const timeDifferenceMs = endTime.getTime() - startTime.getTime();
-
-    // Create a new Date object with the time difference
-    const timeDifference = new Date(timeDifferenceMs);
-
-    // You can access individual components of the time difference if needed
-    // const hours = timeDifference.getUTCHours();
-    // const minutes = timeDifference.getUTCMinutes();
-    // const seconds = timeDifference.getUTCSeconds();
-
-    // Return the time difference as a Date object
-    return timeDifference;
-  }
 
 };

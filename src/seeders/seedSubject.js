@@ -1,5 +1,4 @@
-
-const dbQueries = require('../models/dbQueries');
+const generalQueries = require('../queries/generalQueries');
 
 module.exports = {
 
@@ -7,7 +6,7 @@ module.exports = {
 
     seedSubjects: async () => {
 
-        const existingsubjects = await dbQueries.getsubjects();
+        const existingsubjects = await generalQueries.getsubjects();
         try {
 
             if (existingsubjects.length == 0) {
@@ -30,7 +29,7 @@ module.exports = {
                 // await Subject.deleteMany({});
 
                 // Insert new subjects
-                await dbQueries.addSubjects(subjectsData);
+                await generalQueries.addSubjects(subjectsData);
 
                 console.log('Subjects seeded successfully.');
             }
