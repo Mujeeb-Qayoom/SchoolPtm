@@ -4,8 +4,8 @@ const ptmSchema = require('../models/ptmModel');
 const teacherAttributeSchema = require('../models/teacherAttributesModel');
 const timeSlotSchema = require('../models/timeSlot');
 const appointmentSchema = require('../models/appointmentModel');
-const Childern = require('../models/childernModel');
-
+const childernSchema = require('../models/childernModel');
+const mapFunctiions = require('../functions/mapFunctiions');
 
 module.exports = {
 
@@ -24,8 +24,7 @@ module.exports = {
         }
     },
 
-
-    getAllPtmTeachers: async (ptmDate, childrenId) => {
+    getAllPtmTeachersbyChildId: async (res, ptmDate, childrenId) => {
 
         try {
 
@@ -38,16 +37,16 @@ module.exports = {
 
             // Check if there are documents in TeacherAttributeModel
             const teacherAttributeDocuments = await teacherAttributeSchema.find({ ptm: { $in: ptmDocuments.map(doc => doc._id) } });
-            //  console.log("TeacherAttributeModel documents:", teacherAttributeDocuments);
+            console.log("TeacherAttributeModel documents:", teacherAttributeDocuments);
 
             // Check if there are documents in Teacher
             const teacherDocuments = await teacherSchema.find({ _id: { $in: teacherAttributeDocuments.map(doc => doc.teacher) } });
-            //    console.log("Teacher documents before filtering:", teacherDocuments);
+            console.log("Teacher documents before filtering:", teacherDocuments);
 
             // Find the grade associated with the specified childrenId
-            const child = await Childern.findById(childrenId).populate('grade');
+            const child = await childernSchema.findById(childrenId).populate('grade');
 
-            //console.log("child issssssssssssssssssssss", child)
+            console.log("child issssssssssssssssssssss", child)
             if (!child) {
                 console.log("Child not found for the given ID.");
                 return;
@@ -67,9 +66,10 @@ module.exports = {
             // Find all timeslots associated with the filteredTeachers
             const timeslots = await timeSlotSchema.find({ teacher: { $in: teacherIds } });
 
+
             console.log("Timeslots for filtered teachers:", timeslots);
 
-            // console.log("Filtered Teacher documents:", filteredTeachers);
+            console.log("Filtered Teacher documents:", filteredTeachers);
 
             if (timeslots) {
                 return timeslots;
@@ -80,11 +80,10 @@ module.exports = {
         catch (err) {
 
             console.error(err);
+            return false;
 
         }
-
     },
-
 
     MyAppoitments: async (uId) => {
         try {
@@ -105,4 +104,50 @@ module.exports = {
     },
 
 
+    getAppointmentById: async (apptId) => {
+
+        const result = await appointmentSchema.findOne({ _id: apptId }).populate('timeSlots');
+
+        if (result) {
+            return result;
+        }
+        return false;
+
+    },
+
+    deleteTimeslot: async (timeSlot) => {
+
+        const result = await timeSlotSchema.findByIdAndUpdate(timeSlot._id, { isActive: false });
+
+        if (result) {
+            return true;
+        }
+        return false;
+    },
+
+    createSlot: async (req, timeslot) => {
+
+        const result = await timeSlotSchema.create({
+
+            startTime: timeslot.startTime,
+            endTime: timeslot.endTime,
+            isActive: true,
+            location: timeslot.locationId,
+            teacher: timeslot.teacherId,
+            appointment: req.appointmentId,
+            status: "upcomming",
+            ptm: req.ptmId
+        })
+
+        if (result) {
+            return result;
+        }
+        return false;
+
+    },
+
+    updateAppointment: async () => {
+
+
+    },
 }

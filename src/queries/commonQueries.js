@@ -3,13 +3,11 @@ const userSchema = require('../models/userModel');
 const ptmSchema = require('../models/ptmModel');
 const timeSlotSchema = require('../models/timeSlot');
 const appointmentSchema = require('../models/appointmentModel');
+const classSchema = require('../models/classModel');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
-
-
-
 
     addAppointment: async (data) => {
 
@@ -118,4 +116,30 @@ module.exports = {
         }
         return false;
     },
+
+    getPtms: async () => {
+
+        const result = await ptmSchema.find();
+
+        if (result) {
+            return result;
+        }
+        return false;
+    },
+
+    getAllClasses: async (req, res) => {
+        try {
+            const result = await classSchema.find();
+
+            if (result.length > 0) {
+                return { success: true, message: result }
+            }
+            return {
+                success: false, message: "no data found"
+            }
+        }
+        catch (err) {
+            return { success: false, message: "server error" }
+        }
+    }
 }

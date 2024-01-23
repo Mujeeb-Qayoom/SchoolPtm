@@ -1,6 +1,6 @@
 
 const generalQueries = require('../queries/generalQueries');
-
+const adminQueries = require('../queries/AdminQueries');
 module.exports = {
 
   seedLocations: async () => {
@@ -26,7 +26,7 @@ module.exports = {
         ];
 
         // Insert the sample data into the Location model
-        const insertedLocations = await generalQueries.addLocation(locationsData);
+        const insertedLocations = await adminQueries.addLocation(locationsData);
 
         console.log('Locations seeded successfully:', insertedLocations);
       } else {

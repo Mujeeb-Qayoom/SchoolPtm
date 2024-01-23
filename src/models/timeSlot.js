@@ -31,6 +31,10 @@ const timeSlotSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Appointment',
   },
+  ptm: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Ptm'
+  }
 });
 
 const TimeSlot = mongoose.model('TimeSlot', timeSlotSchema);

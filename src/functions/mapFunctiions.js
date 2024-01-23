@@ -13,7 +13,7 @@ module.exports =
 {
 
   mapChildren: async (childrenArray, fieldToRemove) => {
-    h
+
     return Promise.all(childrenArray.map(async (child) => {
       // Use destructuring to create a new object without the specified field
       const { [fieldToRemove]: removedField, ...newChild } = child;
@@ -87,15 +87,19 @@ module.exports =
         // Convert timeslot and teacherId to string for Set comparison 
 
         const timeslotString = JSON.stringify(timeslot.startTime);
-        const teacherString = JSON.stringify(timeslot.techerId)
+        const teacherString = JSON.stringify(timeslot.teacherId)
+        // console.log(timeslotString)
+        // console.log(teacherString);
 
         if (timeslotsSet.has(timeslotString) || teacherIdSet.has(teacherString)) {
+          console.log('if ', timeslotsSet)
           // Duplicate timeslot found
           return true;
         }
 
         timeslotsSet.add(timeslotString);
         teacherIdSet.add(teacherString);
+        // console.log('else ', timeslotsSet);
         return false;
       })) {
         // Duplicate timeslot found.
@@ -109,6 +113,66 @@ module.exports =
 
     }
   },
+
+
+  timeDifference: async (start_time, end_time) => {
+
+    const startTime = new Date(start_time);
+    const endTime = new Date(end_time);
+
+    if (!(startTime instanceof Date) || !(endTime instanceof Date)) {
+      throw new Error("Both arguments must be Date objects.");
+    }
+
+    // getTime() returns the number of milliseconds since January 1, 1970
+    const timeDifferenceMs = endTime.getTime() - startTime.getTime();
+
+    // Create a new Date object with the time difference
+    const timeDifference = new Date(timeDifferenceMs);
+
+    // You can access individual components of the time difference if needed
+    // const hours = timeDifference.getUTCHours();
+    // const minutes = timeDifference.getUTCMinutes();
+    // const seconds = timeDifference.getUTCSeconds();
+
+    // Return the time difference as a Date object
+    return timeDifference;
+  },
+
+  findIntersection: async (array1, array2) => {
+
+    return array1.filter(value => !array2.includes(value));
+  },
+
+  mapTimeSlots: async () => {
+
+    // Map the timeslots based on teacherId
+    const mappedTimeslots = reqBody.timeslots.map(reqTimeslot => {
+      const matchingAppointmentTimeslot = appointmentData.timeSlots.find(
+        apptTimeslot => apptTimeslot.teacher === reqTimeslot.teacherId
+      );
+
+      // If a matching timeslot is found in the appointment, map the data
+      if (matchingAppointmentTimeslot) {
+        return {
+          startTime: reqTimeslot.startTime,
+          endTime: reqTimeslot.endTime,
+          teacherId: reqTimeslot.teacherId,
+          isDeleted: matchingAppointmentTimeslot.isDeleted
+        };
+      } else {
+        // Handle the case when no matching timeslot is found
+        console.error(`No matching timeslot found for teacherId: ${reqTimeslot.teacherId}`);
+        return null;
+      }
+    });
+
+    // Update the timeslots in the request with the mapped values
+    reqBody.timeslots = mappedTimeslots;
+
+    console.log(reqBody);
+
+  }
 
 
 };

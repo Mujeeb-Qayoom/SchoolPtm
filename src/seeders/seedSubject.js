@@ -1,4 +1,5 @@
 const generalQueries = require('../queries/generalQueries');
+const adminQueries = require('../queries/AdminQueries');
 
 module.exports = {
 
@@ -29,7 +30,7 @@ module.exports = {
                 // await Subject.deleteMany({});
 
                 // Insert new subjects
-                await generalQueries.addSubjects(subjectsData);
+                await adminQueries.addSubjects(subjectsData);
 
                 console.log('Subjects seeded successfully.');
             }
