@@ -12,6 +12,7 @@ Router.get('/class/getAllClasses', auth.userAuth, userController.getAllClasses);
 
 Router.post('/addLocation', auth.userAuth, userController.addLocations);
 
+
 Router.post('/addSubjects', auth.userAuth, userController.addSubject);
 Router.get('/getSubjects', auth.userAuth, userController.getSubjects);
 
