@@ -2,7 +2,8 @@
 const jwt = require('jsonwebtoken');
 const userSchema = require('../models/userModel');
 const response = require('../functions/responses');
-const dbQuries = require('../models/dbQueries');
+const commonQueries = require('../queries/commonQueries');
+
 
 
 module.exports = {
@@ -16,45 +17,50 @@ module.exports = {
   userAuth: async (req, res, next) => {
 
     try {
-      const token = req.header('Authorization').replace("Bearer ", "");
-      // const decode = jwt.verify(token,process.env.JWT_SECRET_KEY);
+      const token = req.header('Authorization');
 
       if (!token) {
         return response.errorResponse(req, res, 401, 'Missing authorization header');
       }
-      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+
+      const tokenWithoutBearer = token.replace("Bearer ", "");
+
+      if (!tokenWithoutBearer) {
+        return response.errorResponse(req, res, 401, 'Invalid authorization format');
+      }
+
+      const decoded = jwt.verify(tokenWithoutBearer, process.env.JWT_SECRET_KEY, (err, decoded) => {
         if (err) {
           return false;
         }
         return decoded;
-      })
+      });
+
       if (!decoded) {
-        return response.errorResponse(req, res, 401, 'session expired');
+        return response.errorResponse(req, res, 401, 'Session expired');
       }
 
       const user = await userSchema.findOne({ _id: decoded._id });
 
-
       if (!user) {
-        return response.errorResponse(req, res, 401, "please authenticate");
+        return response.errorResponse(req, res, 401, 'Please authenticate');
       }
 
-      if (user.role === "admin" || user.role === "parent") {
+      if (user.role === 'admin' || user.role === 'parent') {
         req.user = user;
-        req.token = token;
+        req.token = tokenWithoutBearer;
         return next();
       }
-      return response.errorResponse(req, res, 401, "access denied");
 
-    }
-    catch (error) {
-      return response.serverResponse(res, 500, "Server Error");
+      return response.errorResponse(req, res, 401, 'Access denied');
+    } catch (error) {
+      return response.serverResponse(res, 500, 'Server Error');
     }
   },
 
   loginAuth: async (req, res, next) => {
     try {
-      const data = await dbQuries.findUser(req.body.email);
+      const data = await commonQueries.findUser(req.body.email);
 
       if (!data) {
         return response.errorResponse(req, res, 401, "User not found");
@@ -71,9 +77,9 @@ module.exports = {
     }
   },
 
-  registerAuth: async (req, res, next) => {
+  // registerAuth: async (req, res, next) => {
 
-    const data = await dbQuries.findUser(req.body.email)
+  //   const data = await dbQuries.findUser(req.body.email)
 
-  }
+  // }
 }

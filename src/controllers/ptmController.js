@@ -7,11 +7,11 @@ const SlotData = require('../validations/timeSlotValidator');
 const mapFunctiions = require('../functions/mapFunctiions');
 const commonQueries = require('../queries/commonQueries');
 const adminQueries = require('../queries/AdminQueries');
-
+const generalQueries = require('../queries/generalQueries');
+const parentQueries = require('../queries/parentQueries');
 
 
 module.exports = {
-
 
    addPtm: async (req, res) => {
       try {
@@ -98,7 +98,8 @@ module.exports = {
                         location: teacher.location_id,
                         teacher: teacher.teacher_id,
                         appointment: appt._id,
-                        status: "freezed"
+                        status: "freezed",
+                        ptm: result._id
                      }
                      console.log("freeze appoitment ", slotdata.appointment);
 
@@ -108,7 +109,7 @@ module.exports = {
 
                      // updating appointmnets with timeslots
 
-                     const updateAppt = await adminQueries.updateAppoitment(timeSlot, appt._id);
+                     const updateAppt = await commonQueries.updateAppoitment(timeSlot, appt._id);
 
                   })
 
@@ -135,14 +136,15 @@ module.exports = {
                         location: teacher.location_id,
                         teacher: teacher.teacher_id,
                         appointment: appt._id,
-                        status: "lunch"
+                        status: "lunch",
+                        ptm: result._id
                      };
                      console.log("lunch appoitment ", slotdata.appointment);
                      // const validatedtimeSlotData = await datavalidator.validateData(slotdata, SlotData, res);
                      const timeSlot = await commonQueries.addTimeSlot(slotdata);
 
                      // updating appointments with time slots
-                     const updateAppt = await adminQueries.updateAppoitment(timeSlot, appt._id);
+                     const updateAppt = await commonQueries.updateAppoitment(timeSlot, appt._id);
                   }
                }))
 
@@ -165,11 +167,11 @@ module.exports = {
 
    },
 
-   getPtm: async (req, res) => {
+   getAllPtm: async (req, res) => {
 
       try {
 
-         const ptm = await commonQueries.getPtm(req.body.ptm, req.body.childern);
+         const ptm = await commonQueries.getPtms();
 
          if (ptm) {
             return responses.successResponse(req, res, 200, ptm);
@@ -181,5 +183,7 @@ module.exports = {
          return responses.serverResponse(res, 500, "something went wrong");
       }
    },
+
+
 
 }

@@ -1,6 +1,3 @@
-// seedAdmin.js
-
-//require('../config/db');
 
 const crypt = require('../functions/bcrypt');
 const commonQueries = require('../queries/commonQueries');
