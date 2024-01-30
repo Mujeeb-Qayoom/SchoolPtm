@@ -2,6 +2,7 @@
 const parentSchema = require('../models/parentModel');
 const locationSchema = require('../models/location');
 const ptmSchema = require('../models/ptmModel');
+const userSchema = require('../models/userModel');
 const subjectSchema = require('../models/subjectModel');
 const appointmentSchema = require('../models/appointmentModel');
 const timeslotSchema = require('../models/timeSlot');
@@ -124,6 +125,20 @@ module.exports = {
         try {
 
             const id = await parentSchema.findOne({ user: user._id });
+
+            if (id) {
+                return id
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    },
+    findEmail: async (user) => {
+        try {
+
+            const id = await userSchema.findOne({ email: user });
 
             if (id) {
                 return id

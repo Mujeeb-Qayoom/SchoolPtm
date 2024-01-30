@@ -81,5 +81,29 @@ module.exports = {
 
   //   const data = await dbQuries.findUser(req.body.email)
 
-  // }
+  // },
+
+  resetPassword: async (req, res, next) => {
+
+    const decoded = jwt.verify(req.query.token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+      if (err) {
+        return false;
+      }
+      return decoded;
+    });
+
+    if (!decoded) {
+      return response.errorResponse(req, res, 401, 'Session expired');
+    }
+
+    const user = await userSchema.findOne({ _id: decoded._id });
+    console.log(user);
+
+    if (!user) {
+      return response.errorResponse(req, res, 401, 'Please authenticate');
+    }
+    req.user = user;
+    return next();
+
+  }
 }

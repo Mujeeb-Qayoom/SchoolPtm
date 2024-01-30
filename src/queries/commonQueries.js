@@ -141,5 +141,23 @@ module.exports = {
         catch (err) {
             return { success: false, message: "server error" }
         }
+    },
+    resetPassword: async (email, password) => {
+
+        try {
+
+            const result = await userSchema.updateOne(
+                { email: email },
+                { $set: { password: password } })
+
+            if (result) {
+                console.log(result);
+                return { success: true, message: result }
+            }
+            return { success: false, message: "no data found" }
+        }
+        catch (err) {
+            return { success: false, message: "server error" }
+        }
     }
 }

@@ -368,7 +368,7 @@ module.exports = {
         try {
             const result = await teacherAttributeSchema.find({ teacher: teacherId, ptm: ptmId });
 
-            if (result.length == 0) {
+            if (result) {
                 return true;
             }
             return false;
@@ -393,12 +393,12 @@ module.exports = {
             );
             // Update teacher in timeSlotSchema
             const resultTimeSlot = await timeSlotSchema.updateMany(
-                { ptmId: Id, teacher: pTeacherId },
+                { ptm: Id, teacher: pTeacherId },
                 { $set: { teacher: nTeacherId } }
             );
 
-            console.log("result", resultTeacherAttribute),
-                console.log("data", resultTimeSlot);
+            console.log("result", resultTeacherAttribute)
+            console.log("data", resultTimeSlot);
 
             if (resultTeacherAttribute.acknowledged === true && resultTimeSlot.acknowledged === true) {
                 // Both updates were successful
