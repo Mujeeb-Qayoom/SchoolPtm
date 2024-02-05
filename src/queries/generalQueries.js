@@ -161,7 +161,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.error(err);
+            return err
         }
     },
 
@@ -233,4 +233,19 @@ module.exports = {
         }
     },
 
+    getLocation: async (location) => {
+        try {
+
+            const id = await locationSchema.findOne({ _id: location });
+
+            if (id) {
+                return id
+            } else {
+                return false
+            }
+        } catch (err) {
+            return err
+        }
+
+    },
 }

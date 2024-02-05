@@ -8,6 +8,7 @@ const generalQueries = require('../queries/generalQueries');
 const mapFunctiions = require('../functions/mapFunctiions');
 const mailer = require('../functions/mailer');
 const helpers = require('../functions/helpers');
+const { response } = require('../../app');
 
 module.exports = {
 
@@ -86,6 +87,28 @@ module.exports = {
       return responses.serverResponse(res, 500, err);
     }
 
+  },
+
+  changePassword: async (req, res) => {
+    try {
+      //const hash = await bcrypt.hashPassword(req.body.oldPassword);
+      const match = await bcrypt.comparePassword(req.body.oldPassword, req.user.password);
+      console.log(req.user);
+      console.log(match, req.user.password, req.body.newPassword, req.body.confirmPassword)
+      if (match && req.body.newPassword == req.body.confirmPassword) {
+
+        const hashPassword = await bcrypt.hashPassword(req.body.newPassword);
+
+        const result = await commonQueries.resetPassword(req.user.email, hashPassword);
+        if (result.success) {
+          return responses.successResponse(req, res, 200, "password updated")
+        }
+      }
+      return responses.errorResponse(req, res, 400, "check your data")
+    }
+    catch (err) {
+      return responses.serverResponse(res, 500, err)
+    }
   },
 
   forgetPassword: async (req, res) => {
@@ -200,6 +223,21 @@ module.exports = {
 
   },
 
+  getAllParents: async (req, res) => {
+
+    try {
+      const teachers = await adminQueries.getAllParents();
+
+      if (teachers) {
+        return responses.successResponse(req, res, 200, teachers);
+      }
+      return responses.errorResponse(req, res, 404, "no data found")
+    }
+    catch (err) {
+      return responses.serverResponse(res, 500, "internal server error");
+    }
+  },
+
   getTeachers: async (req, res) => {
 
     try {
@@ -249,6 +287,50 @@ module.exports = {
     }
   },
 
+  updateLocation: async (req, res) => {
+
+    const locationId = req.params.id;
+
+    try {
+      // Find the location by ID
+      const location = await generalQueries.getLocation(locationId);
+
+      // If the location is not found, return an error response
+      if (!location) {
+        return responses.errorResponse(req, res, 404, 'Location not found');
+      }
+
+
+      const update = await adminQueries.updateLocation(location, req.body);
+      console.log("update", update);
+      if (update.success) {
+        return responses.successResponse(req, res, 200, "updated successfully");
+      }
+      return responses.errorResponse(req, res, 400, update.message); 1
+
+    } catch (error) {
+
+      return responses.serverResponse(res, 500, "internal server error");
+    }
+  },
+
+  deleteLocation: async (req, res) => {
+    try {
+
+      const location = await adminQueries.deleteLocation(req.params.id);
+
+      if (location.success) {
+        return responses.successResponse(req, res, 200, location.message);
+      }
+      return responses.errorResponse(req, res, 400, location.message)
+    }
+    catch (err) {
+
+      return responses.serverResponse(res, 500, location.message);
+
+    }
+  },
+
   addSubject: async (req, res) => {
     try {
       const subject = await adminQueries.addSubjects(req.body);
@@ -276,6 +358,22 @@ module.exports = {
     }
     catch (err) {
       return responses.serverResponse(res, "500", "internal server error");
+    }
+  },
+  deleteSubject: async (req, res) => {
+    try {
+
+      const location = await adminQueries.deleteSubject(req.params.id);
+
+      if (location.success) {
+        return responses.successResponse(req, res, 200, location.message);
+      }
+      return responses.errorResponse(req, res, 400, location.message)
+    }
+    catch (err) {
+
+      return responses.serverResponse(res, 500, location.message);
+
     }
   },
 

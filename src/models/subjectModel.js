@@ -7,6 +7,11 @@ const subjectSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    isActive: {
+        type: Boolean,
+        required: true,
+        default: true,
+    },
 });
 
 const Subject = mongoose.model('Subject', subjectSchema);

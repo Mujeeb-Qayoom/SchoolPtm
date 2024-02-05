@@ -34,6 +34,7 @@ server.listen(port, () => {
   });
 
   db.once('open', () => {
+
     console.log('Connected to MongoDB');
     adminSeed.seedAdmin();
     locationSeed.seedLocations();
@@ -42,3 +43,11 @@ server.listen(port, () => {
   });
   console.log(`listening to the port ${port}`);
 })
+// // process.on('unhandledRejection', err => {
+// //   console.log(err.name, err.message);
+// //   console.log("UNHANDLED REJECTION, SHUTTING DOWN....")
+// //   serverr.close(() => {
+// //     process.exit(1)
+// //   })
+
+// })

@@ -31,7 +31,12 @@ const ptmSchema = new mongoose.Schema({
   lunchEndTime: {
     type: Date,
     required: true
-  }
+  },
+  isActive: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
 });
 
 const Ptm = mongoose.model('Ptm', ptmSchema);

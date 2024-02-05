@@ -17,6 +17,11 @@ const childernSchema = new mongoose.Schema({
     ref: 'Class',
     required: true,
   },
+  isActive: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
 
 });
 

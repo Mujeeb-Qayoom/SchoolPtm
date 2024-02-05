@@ -79,6 +79,21 @@ module.exports = {
         return false;
     },
 
+    deleteLocation: async (id) => {
+
+        try {
+            const deletedLocation = await locationSchema.findByIdAndUpdate(id, { isActive: false });
+
+            if (deletedLocation) {
+                return { success: true, message: 'Location deleted successfully' };
+            } else {
+                return { success: false, message: 'Location not found' };
+            }
+        } catch (error) {
+            return { success: false, message: 'Error deleting location' };
+        }
+    },
+
 
     addTeacher: async (id, subjects, classes) => {
 
@@ -99,6 +114,17 @@ module.exports = {
         return false;
 
     },
+
+    getAllParents: async () => {
+        const result = await parentSchema.find();
+
+        if (result.length != 0) {
+            return result;
+        }
+        return false;
+
+    },
+
 
 
     addClass: async (data) => {
@@ -141,7 +167,21 @@ module.exports = {
         } catch (err) {
             console.error(err);
         }
+    },
 
+    deleteSubject: async (id) => {
+
+        try {
+            const deletedLocation = await subjectSchema.findByIdAndUpdate(id, { isActive: false });
+
+            if (deletedLocation) {
+                return { success: true, message: 'subject deleted successfully' };
+            } else {
+                return { success: false, message: 'subject not found' };
+            }
+        } catch (error) {
+            return { success: false, message: 'Error deleting subject' };
+        }
     },
 
     addPtm: async (data) => {
@@ -175,6 +215,26 @@ module.exports = {
             return result;
         }
         return false;
+    },
+    updateLocation: async (location, body) => {
+        const allowedFields = ["locationName", "floor", "buildingName"];
+
+        // Update only the allowed fields
+        for (const field in body) {
+            if (allowedFields.includes(field)) {
+                location[field] = body[field];
+            } else {
+                return { success: false, message: `Field '${field}' is not allowed for update` };
+            }
+        }
+
+        try {
+            const updatedLocation = await location.save();
+            return { success: true, message: 'Location updated successfully', data: updatedLocation };
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: 'Error updating location' };
+        }
     },
 
     // getAllTimeSlotsCount : async(ptmDate) =>{

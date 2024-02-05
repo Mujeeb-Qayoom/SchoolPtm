@@ -13,6 +13,11 @@ const classSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Subject',
     }],
+    isActive: {
+        type: Boolean,
+        required: true,
+        default: true,
+    },
 });
 
 const Class = mongoose.model('Class', classSchema);

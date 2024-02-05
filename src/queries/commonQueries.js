@@ -116,15 +116,24 @@ module.exports = {
         }
         return false;
     },
+    findPtmById: async (data) => {
+
+        const result = await ptmSchema.findOne({ _id: data })
+
+        if (result) {
+            return true;
+        }
+        return false;
+    },
 
     getPtms: async () => {
 
         const result = await ptmSchema.find();
 
-        if (result) {
+        if (result.length > 0) {
             return result;
         }
-        return false;
+        return null;
     },
 
     getAllClasses: async (req, res) => {

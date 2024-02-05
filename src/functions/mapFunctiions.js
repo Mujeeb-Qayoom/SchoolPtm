@@ -144,35 +144,27 @@ module.exports =
     return array1.filter(value => !array2.includes(value));
   },
 
-  mapTimeSlots: async () => {
+  mapTimeSlots: async (bodyTimeSlot, apptTimeslots) => {
 
     // Map the timeslots based on teacherId
-    const mappedTimeslots = reqBody.timeslots.map(reqTimeslot => {
-      const matchingAppointmentTimeslot = appointmentData.timeSlots.find(
-        apptTimeslot => apptTimeslot.teacher === reqTimeslot.teacherId
-      );
+    const matchingAppointmentTimeslot = apptTimeslots.find(
+      apptTimeslot => apptTimeslot.teacher === bodyTimeSlot.teacherId
+    );
 
-      // If a matching timeslot is found in the appointment, map the data
-      if (matchingAppointmentTimeslot) {
-        return {
-          startTime: reqTimeslot.startTime,
-          endTime: reqTimeslot.endTime,
-          teacherId: reqTimeslot.teacherId,
-          isDeleted: matchingAppointmentTimeslot.isDeleted
-        };
-      } else {
-        // Handle the case when no matching timeslot is found
-        console.error(`No matching timeslot found for teacherId: ${reqTimeslot.teacherId}`);
-        return null;
-      }
-    });
-
-    // Update the timeslots in the request with the mapped values
-    reqBody.timeslots = mappedTimeslots;
-
-    console.log(reqBody);
-
+    console.log("matching ", matchingAppointmentTimeslot);
+    // If a matching timeslot is found in the appointment, map the data
+    if (matchingAppointmentTimeslot) {
+      return {
+        startTime: bodyTimeSlot.startTime,
+        endTime: bodyTimeSlot.endTime,
+        teacherId: bodyTimeSlot.teacherId,
+        isDeleted: matchingAppointmentTimeslot.isDeleted,
+        timeslot: matchingAppointmentTimeslot
+      };
+    } else {
+      // Handle the case when no matching timeslot is found
+      console.error(`No matching timeslot found for teacherId: ${bodyTimeSlot.teacherId}`);
+      return null;
+    }
   }
-
-
 };

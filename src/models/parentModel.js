@@ -11,6 +11,15 @@ const parentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Children',
   }],
+
+  isActive: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
+
+
+
 });
 
 const Parent = mongoose.model('Parent', parentSchema);

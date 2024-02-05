@@ -18,6 +18,7 @@ const timeSlotSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true,
+
   },
   location: {
     type: mongoose.Schema.Types.ObjectId,
@@ -34,7 +35,17 @@ const timeSlotSchema = new mongoose.Schema({
   ptm: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Ptm'
+  },
+  joinUrl: {
+    type: String,
+  },
+  meetingId: {
+    type: String,
+  },
+  startUrl: {
+    type: String,
   }
+
 });
 
 const TimeSlot = mongoose.model('TimeSlot', timeSlotSchema);
