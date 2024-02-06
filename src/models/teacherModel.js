@@ -16,6 +16,11 @@ const teacherSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Class',
   }],
+  isActive: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
 });
 
 const Teacher = mongoose.model('Teacher', teacherSchema);

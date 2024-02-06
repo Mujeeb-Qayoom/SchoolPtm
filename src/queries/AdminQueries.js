@@ -79,6 +79,21 @@ module.exports = {
         return false;
     },
 
+    deleteLocation: async (id) => {
+
+        try {
+            const deletedLocation = await locationSchema.findByIdAndUpdate(id, { isActive: false });
+
+            if (deletedLocation) {
+                return { success: true, message: 'Location deleted successfully' };
+            } else {
+                return { success: false, message: 'Location not found' };
+            }
+        } catch (error) {
+            return { success: false, message: 'Error deleting location' };
+        }
+    },
+
 
     addTeacher: async (id, subjects, classes) => {
 
@@ -99,6 +114,50 @@ module.exports = {
         return false;
 
     },
+
+    getAllParents: async () => {
+        const result = await parentSchema.find();
+
+        if (result.length != 0) {
+            return result;
+        }
+        return false;
+
+    },
+
+    getAvailableLocations: async (ptmId) => {
+
+        try {
+            // const ptmLocations = await teacherAttributeSchema
+            //     .find({ ptm: ptmId }, 'location');
+            const ptmLocations = await teacherAttributeSchema.find({ ptm: ptmId }).distinct('location');
+
+            const locations = await locationSchema.find({}, '_id');
+
+            // Filter out the location ids that are not in ptmLocations
+
+            const availableLocationIds = locations.filter(location => {
+                // Convert the _id of the location to a string for comparison
+                const locationIdString = location._id.toString();
+                // Check if the string representation of the _id is not included in ptmLocations
+                return !ptmLocations.map(ptmLocation => ptmLocation.toString()).includes(locationIdString);
+            }).map(location => location._id);
+
+            const availableLocations = await locationSchema.find({ _id: availableLocationIds }, '_id' + ' locationName').lean();
+
+            // Return the list of available location ids
+            console.log("available locations", availableLocations);
+
+            if (availableLocations) {
+                return availableLocations;
+            }
+            return false;
+        }
+        catch (err) {
+            return err;
+        }
+    },
+
 
 
     addClass: async (data) => {
@@ -141,7 +200,21 @@ module.exports = {
         } catch (err) {
             console.error(err);
         }
+    },
 
+    deleteSubject: async (id) => {
+
+        try {
+            const deletedLocation = await subjectSchema.findByIdAndUpdate(id, { isActive: false });
+
+            if (deletedLocation) {
+                return { success: true, message: 'subject deleted successfully' };
+            } else {
+                return { success: false, message: 'subject not found' };
+            }
+        } catch (error) {
+            return { success: false, message: 'Error deleting subject' };
+        }
     },
 
     addPtm: async (data) => {
@@ -175,6 +248,26 @@ module.exports = {
             return result;
         }
         return false;
+    },
+    updateLocation: async (location, body) => {
+        const allowedFields = ["locationName", "floor", "buildingName"];
+
+        // Update only the allowed fields
+        for (const field in body) {
+            if (allowedFields.includes(field)) {
+                location[field] = body[field];
+            } else {
+                return { success: false, message: `Field '${field}' is not allowed for update` };
+            }
+        }
+
+        try {
+            const updatedLocation = await location.save();
+            return { success: true, message: 'Location updated successfully', data: updatedLocation };
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: 'Error updating location' };
+        }
     },
 
     // getAllTimeSlotsCount : async(ptmDate) =>{
@@ -368,7 +461,7 @@ module.exports = {
         try {
             const result = await teacherAttributeSchema.find({ teacher: teacherId, ptm: ptmId });
 
-            if (result.length == 0) {
+            if (result) {
                 return true;
             }
             return false;
@@ -393,12 +486,12 @@ module.exports = {
             );
             // Update teacher in timeSlotSchema
             const resultTimeSlot = await timeSlotSchema.updateMany(
-                { ptmId: Id, teacher: pTeacherId },
+                { ptm: Id, teacher: pTeacherId },
                 { $set: { teacher: nTeacherId } }
             );
 
-            console.log("result", resultTeacherAttribute),
-                console.log("data", resultTimeSlot);
+            console.log("result", resultTeacherAttribute)
+            console.log("data", resultTimeSlot);
 
             if (resultTeacherAttribute.acknowledged === true && resultTimeSlot.acknowledged === true) {
                 // Both updates were successful

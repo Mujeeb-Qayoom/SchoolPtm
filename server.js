@@ -10,14 +10,15 @@ const app = require('./app');
 
 
 const normalizePort = (val) => {
+  // Check if the value is a named pipe
+  if (val.startsWith('\\\\.\\pipe\\')) {
+    return val;
+  }
   const port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    throw new Error(`Invalid port number: ${val}`);
+  if (isNaN(port) || port < 0) {
+    return 3000; // Default port if the provided value is invalid
   }
-  if (port >= 0) {
-    return port;
-  }
+  return port;
 };
 const port = normalizePort(process.env.PORT || '3300');
 app.set('port', port);
@@ -33,6 +34,7 @@ server.listen(port, () => {
   });
 
   db.once('open', () => {
+
     console.log('Connected to MongoDB');
     adminSeed.seedAdmin();
     locationSeed.seedLocations();
@@ -41,3 +43,11 @@ server.listen(port, () => {
   });
   console.log(`listening to the port ${port}`);
 })
+// // process.on('unhandledRejection', err => {
+// //   console.log(err.name, err.message);
+// //   console.log("UNHANDLED REJECTION, SHUTTING DOWN....")
+// //   serverr.close(() => {
+// //     process.exit(1)
+// //   })
+
+// })

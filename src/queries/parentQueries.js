@@ -34,6 +34,7 @@ module.exports = {
             if (ptmDocuments.length == 0) {
                 return false;
             }
+            console.log("jhgggffddsfghjklljhgfdshjkjhgf");
 
             // Check if there are documents in TeacherAttributeModel
             const teacherAttributeDocuments = await teacherAttributeSchema.find({ ptm: { $in: ptmDocuments.map(doc => doc._id) } });
@@ -51,6 +52,9 @@ module.exports = {
                 console.log("Child not found for the given ID.");
                 return;
             }
+
+            console.log("dataaaaaaaaaaaaaaaa");
+
             const gradeId = child.grade._id;
 
             // Filter teachers based on the grade
@@ -66,22 +70,18 @@ module.exports = {
             // Find all timeslots associated with the filteredTeachers
             const timeslots = await timeSlotSchema.find({ teacher: { $in: teacherIds } });
 
-
             console.log("Timeslots for filtered teachers:", timeslots);
 
             console.log("Filtered Teacher documents:", filteredTeachers);
-
             if (timeslots) {
                 return timeslots;
             }
             return false;
-
         }
         catch (err) {
 
             console.error(err);
             return false;
-
         }
     },
 
@@ -90,7 +90,10 @@ module.exports = {
             const parent = await parentSchema.findOne({ user: uId });
 
             if (parent) {
-                const appointments = await appointmentSchema.find({ parentId: parent._id });
+                const appointments = await appointmentSchema.find({
+                    parentId: parent._id,
+                    isActive: true
+                });
                 console.log(appointments);
                 return appointments;
             } else {
@@ -125,18 +128,36 @@ module.exports = {
         return false;
     },
 
-    createSlot: async (req, timeslot) => {
+    updateTimeSlot: async (newSlot, appt) => {
+
+        const check = await timeSlotSchema.find({
+            startTime: newSlot.startTime,
+            endTime: newSlot.endTime,
+            ptmId: appt.ptm
+        })
+
+        if (check) {
+            return { success: false, message: "slot already booked" }
+        }
+
+        const timeslot = await timeSlotSchema.findByIdAndUpdate()
+
+    },
+
+    createSlot: async (body, appt) => {
+
+        console.log("body create", body)
 
         const result = await timeSlotSchema.create({
 
-            startTime: timeslot.startTime,
-            endTime: timeslot.endTime,
+            startTime: body.startTime,
+            endTime: body.endTime,
             isActive: true,
-            location: timeslot.locationId,
-            teacher: timeslot.teacherId,
-            appointment: req.appointmentId,
+            location: body.locationId,
+            teacher: body.teacherId,
+            appointment: appt._id,
             status: "upcomming",
-            ptm: req.ptmId
+            ptm: appt.ptm
         })
 
         if (result) {
@@ -146,8 +167,6 @@ module.exports = {
 
     },
 
-    updateAppointment: async () => {
 
 
-    },
 }

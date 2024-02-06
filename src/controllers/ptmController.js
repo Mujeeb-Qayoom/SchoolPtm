@@ -65,6 +65,7 @@ module.exports = {
                   const appData = {
                      ptm: result.id,
                      isActive: true,
+                     meetingType: 'offline'
                   }
 
                   const validatedAppointmentDAata = await datavalidator.validateData(appData, appointmentData, res);
@@ -176,11 +177,11 @@ module.exports = {
          if (ptm) {
             return responses.successResponse(req, res, 200, ptm);
          }
-         return responses.errorResponse(req, res, 404, "ptm no found");
+         return responses.errorResponse(req, res, 400, "ptm no found");
       }
       catch (err) {
 
-         return responses.serverResponse(res, 500, "something went wrong");
+         return responses.serverResponse(res, 500, "internal server error");
       }
    },
 

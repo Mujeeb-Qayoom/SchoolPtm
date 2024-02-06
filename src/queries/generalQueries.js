@@ -1,7 +1,9 @@
 
 const parentSchema = require('../models/parentModel');
+const childrenSchema = require('../models/childernModel');
 const locationSchema = require('../models/location');
 const ptmSchema = require('../models/ptmModel');
+const userSchema = require('../models/userModel');
 const subjectSchema = require('../models/subjectModel');
 const appointmentSchema = require('../models/appointmentModel');
 const timeslotSchema = require('../models/timeSlot');
@@ -134,6 +136,20 @@ module.exports = {
             console.error(err);
         }
     },
+    findEmail: async (user) => {
+        try {
+
+            const id = await userSchema.findOne({ email: user });
+
+            if (id) {
+                return id
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    },
 
     findParentId: async (user) => {
         try {
@@ -146,9 +162,44 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.error(err);
+            return err
         }
     },
+
+    findChildIdandSetIsActive: async (childrenId) => {
+        try {
+
+            const child = await childrenSchema.findOne({ _id: childrenId });
+            console.log("id is ", child);
+            if (!child) {
+                return false;
+            }
+
+            const newIsActive = !child.isActive; // Toggle isActive field
+            console.log(newIsActive);
+            const childUpdate = await childrenSchema.updateOne(
+                { _id: childrenId },
+                { $set: { isActive: newIsActive } });
+            console.log("childrenUpdate", childUpdate);
+
+            if (!child.user) {
+                console.error('User document not found');
+                return false;
+            }
+
+            const userUpdate = await userSchema.updateOne({ _id: child.user },
+                { $set: { isActive: newIsActive } });
+
+            console.log("userUpdate", userUpdate);
+            if (childUpdate && userUpdate) {
+                return true
+            }
+            return false;
+        } catch (err) {
+            return false
+        }
+    },
+
 
     getPtmIdByDay: async (date) => {
         try {
@@ -218,4 +269,19 @@ module.exports = {
         }
     },
 
+    getLocation: async (location) => {
+        try {
+
+            const id = await locationSchema.findOne({ _id: location });
+
+            if (id) {
+                return id
+            } else {
+                return false
+            }
+        } catch (err) {
+            return err
+        }
+
+    },
 }

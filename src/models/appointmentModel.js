@@ -9,8 +9,7 @@ const appointmentSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-
-  timeSlots: [{                                     /// array of time skots id's
+  timeSlots: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'TimeSlot',
     required: true,
@@ -20,9 +19,15 @@ const appointmentSchema = new mongoose.Schema({
     ref: 'Ptm',
     required: true,
   },
+  meetingType: {
+    type: String,
+    enum: ['online', 'offline'],
+    required: true
+  },
   isActive: {
     type: Boolean,
     required: true,
+    default: true,
   }
 
 });

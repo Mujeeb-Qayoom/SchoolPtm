@@ -18,8 +18,14 @@ const teacherAttributeModelSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Ptm',
   },
+  isActive: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
+
 });
 
-const TeacherAttributeModel = mongoose.model('TeacherAttributeModel', teacherAttributeModelSchema);
+const TeacherAttributeModel = mongoose.model('TeacherAttribute', teacherAttributeModelSchema);
 
 module.exports = TeacherAttributeModel;
