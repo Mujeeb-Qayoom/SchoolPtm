@@ -8,19 +8,19 @@ Router.post('/account/register', auth.userAuth, userController.register);
 Router.post('/class/addClass', auth.userAuth, userController.addClass);
 Router.get('/class/getAllClasses', auth.userAuth, userController.getAllClasses);
 
+
 Router.post('/addLocation', auth.userAuth, userController.addLocations);
 Router.post('/updateLocation/:id', auth.userAuth, userController.updateLocation);
 Router.delete('/deleteLocation/:id', auth.userAuth, userController.deleteLocation);
 
+Router.get('/getAvailableLocations', auth.userAuth, userController.getAvailableLocations);
 Router.get('/getAllParents', auth.userAuth, userController.getAllParents);
-
 
 Router.post('/addSubjects', auth.userAuth, userController.addSubject);
 Router.get('/getSubjects', auth.userAuth, userController.getSubjects);
 Router.delete('/deleteSubject/:id', auth.userAuth, userController.deleteSubject);
 
 
-//working on it
 Router.get('/getAllTimeSlotsCount', userController.getAllTimeSlotsCount);
 Router.get('/getUsersCount', userController.getUsersCount);
 
@@ -32,6 +32,8 @@ Router.post('/updateTeacherForSwap', userController.updateTeacherForSwap);
 
 Router.get('/getAllParentsWithChildrenDetails', userController.getAllParentsWithChildrenDetails);
 Router.post('/addChildrenToParent', auth.userAuth, userController.addChildrenToParent);
+
+Router.post('/enableDisableChild', userController.enableDisableChild);
 
 
 module.exports = Router;

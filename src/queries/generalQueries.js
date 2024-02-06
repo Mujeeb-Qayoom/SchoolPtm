@@ -1,5 +1,6 @@
 
 const parentSchema = require('../models/parentModel');
+const childrenSchema = require('../models/childernModel');
 const locationSchema = require('../models/location');
 const ptmSchema = require('../models/ptmModel');
 const userSchema = require('../models/userModel');
@@ -164,6 +165,41 @@ module.exports = {
             return err
         }
     },
+
+    findChildIdandSetIsActive: async (childrenId) => {
+        try {
+
+            const child = await childrenSchema.findOne({ _id: childrenId });
+            console.log("id is ", child);
+            if (!child) {
+                return false;
+            }
+
+            const newIsActive = !child.isActive; // Toggle isActive field
+            console.log(newIsActive);
+            const childUpdate = await childrenSchema.updateOne(
+                { _id: childrenId },
+                { $set: { isActive: newIsActive } });
+            console.log("childrenUpdate", childUpdate);
+
+            if (!child.user) {
+                console.error('User document not found');
+                return false;
+            }
+
+            const userUpdate = await userSchema.updateOne({ _id: child.user },
+                { $set: { isActive: newIsActive } });
+
+            console.log("userUpdate", userUpdate);
+            if (childUpdate && userUpdate) {
+                return true
+            }
+            return false;
+        } catch (err) {
+            return false
+        }
+    },
+
 
     getPtmIdByDay: async (date) => {
         try {

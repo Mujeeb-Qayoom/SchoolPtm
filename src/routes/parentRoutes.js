@@ -6,7 +6,6 @@ const auth = require('../middleware/auth');
 
 Router.get('/pareent/getMyChildren', auth.userAuth, parentController.getMyChildren);
 
-Router.get('/getAvailableLocations', parentController.getAvailableLocations);
 
 Router.post('/parent/bookAppoitment', auth.userAuth, parentController.bookAppoitment);
 

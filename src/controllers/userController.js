@@ -198,6 +198,21 @@ module.exports = {
     }
   },
 
+  enableDisableChild: async (req, res) => {
+
+    try {
+
+      const isUpdated = await generalQueries.findChildIdandSetIsActive(req.body.childId);
+
+      if (isUpdated) {
+        return responses.successResponse(req, res, 200, "successfully done");
+      }
+      return responses.errorResponse(req, res, 404, "child not found")
+    }
+    catch (err) {
+      return responses.serverResponse(res, 500, "internal server error");
+    }
+  },
 
   login: async (req, res) => {
 
@@ -219,6 +234,27 @@ module.exports = {
     }
     catch (err) {
       return responses.serverResponse(res, 500, err);
+    }
+
+  },
+
+  getAvailableLocations: async (req, res) => {
+    try {
+      const ptm = await commonQueries.findPtmById(req.body.ptmId);
+
+      if (!ptm) {
+        return responses.errorResponse(req, res, 400, "ptm not found")
+      }
+
+      const location = await adminQueries.getAvailableLocations(req.body.ptmId);
+
+      if (location) {
+        return responses.successResponse(req, res, 200, location)
+      }
+      return responses.errorResponse(req, res, 400, "check your data");
+    }
+    catch (err) {
+      return responses.serverResponse(res, 500, "server error")
     }
 
   },
@@ -299,8 +335,6 @@ module.exports = {
       if (!location) {
         return responses.errorResponse(req, res, 404, 'Location not found');
       }
-
-
       const update = await adminQueries.updateLocation(location, req.body);
       console.log("update", update);
       if (update.success) {
@@ -325,9 +359,7 @@ module.exports = {
       return responses.errorResponse(req, res, 400, location.message)
     }
     catch (err) {
-
       return responses.serverResponse(res, 500, location.message);
-
     }
   },
 

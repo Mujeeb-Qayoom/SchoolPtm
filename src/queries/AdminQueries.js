@@ -125,6 +125,39 @@ module.exports = {
 
     },
 
+    getAvailableLocations: async (ptmId) => {
+
+        try {
+            // const ptmLocations = await teacherAttributeSchema
+            //     .find({ ptm: ptmId }, 'location');
+            const ptmLocations = await teacherAttributeSchema.find({ ptm: ptmId }).distinct('location');
+
+            const locations = await locationSchema.find({}, '_id');
+
+            // Filter out the location ids that are not in ptmLocations
+
+            const availableLocationIds = locations.filter(location => {
+                // Convert the _id of the location to a string for comparison
+                const locationIdString = location._id.toString();
+                // Check if the string representation of the _id is not included in ptmLocations
+                return !ptmLocations.map(ptmLocation => ptmLocation.toString()).includes(locationIdString);
+            }).map(location => location._id);
+
+            const availableLocations = await locationSchema.find({ _id: availableLocationIds }, '_id' + ' locationName').lean();
+
+            // Return the list of available location ids
+            console.log("available locations", availableLocations);
+
+            if (availableLocations) {
+                return availableLocations;
+            }
+            return false;
+        }
+        catch (err) {
+            return err;
+        }
+    },
+
 
 
     addClass: async (data) => {

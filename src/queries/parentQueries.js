@@ -168,18 +168,5 @@ module.exports = {
     },
 
 
-    getAvailableLocations: async (ptmId) => {
-        try {
-            const result = await TeacherAttribute.find({ ptm: ptmId })
-                .populate('location', 'name'); // 'name' is the field you want to populate from the 'Location' collection
 
-            if (result) {
-                return result;
-            }
-            return false;
-        }
-        catch (err) {
-            return err;
-        }
-    },
 }
